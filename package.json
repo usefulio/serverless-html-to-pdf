@@ -1,0 +1,24 @@
+{
+  "name": "serverless-html-to-pdf",
+  "version": "1.0.0",
+  "description": "Lambda service exposing wkhtmltopdf functionality for use with APIGold",
+  "dependencies": {
+    "wkhtmltopdf": "^0.3.3",
+    "read-all-stream": "^3.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usefulio/serverless-html-to-pdf.git"
+  },
+  "author": "Useful IO",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/usefulio/serverless-html-to-pdf/issues"
+  },
+  "homepage": "https://github.com/usefulio/serverless-html-to-pdf#readme"
+}

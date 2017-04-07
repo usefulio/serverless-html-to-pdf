@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Lambda service exposing wkhtmltopdf functionality for use with APIGold",
   "dependencies": {
-    "wkhtmltopdf": "^0.3.3",
-    "read-all-stream": "^3.1.0"
+    "node-fetch": "^1.6.3",
+    "read-all-stream": "^3.1.0",
+    "wkhtmltopdf": "^0.3.3"
   },
   "devDependencies": {},
   "scripts": {

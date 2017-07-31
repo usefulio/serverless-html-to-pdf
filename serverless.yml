@@ -6,9 +6,13 @@ service: htmlToPdf
 
 provider:
   name: aws
-  runtime: nodejs4.3
-  profile: usefulio
+  runtime: nodejs6.10
+  profile: oculushealth
   cfLogs: true
+  environment:
+    STAGE: ${opt:stage, self:custom.defaultStage}
+    REGION: us-east-1
+    SERVICE_NAME: ${self:service}
 
 functions:
   htmlToPdf:

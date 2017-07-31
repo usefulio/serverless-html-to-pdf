@@ -9,22 +9,52 @@ var fetch = require('node-fetch');
 var wkhtmltopdf = require('wkhtmltopdf');
 var read = require('read-all-stream');
 
+// const Promise = require('bluebird');
+const zip = require('./lib/zip');
+
 function renderPdf(html, options) {
   return read(wkhtmltopdf(html, options), null);
 };
 
 module.exports.htmlToPdf = function(event, context, callback) {
-  var input = JSON.parse(event.body);
+  let input = {};
+  if (event.body) {
+    // REST call
+    input = JSON.parse(event.body);    
+  } else {
+    // API call
+    input = event;
+  }
+
+  const zippedHtml = input.options && input.options.zippedHtml,
+        zippedPdf = input.options && input.options.zippedPdf,
+        zippedPdfFilename = input.options && input.options.zippedPdfFilename;
+
+  input.options && (delete input.options.zippedHtml);
+  input.options && (delete input.options.zippedPdf);
+  input.options && (delete input.options.zippedPdfFilename);
+
   var debug = input.debug === true;
   
   if(debug){
     console.log('received input');
-    console.log(event.body);
+    console.log(input);
   }
 
   var promises = [];
 
   if(input.options){
+    if(zippedHtml) {
+      var g = JSON.stringify(input.html).replace(/[\[\]\,\"]/g,''); //https://stackoverflow.com/a/19354869/4076776
+      console.log(`zipped input length (bytes): ${g.length}`);
+      delete input.options.zipped;
+      promises.push(
+          zip.decompress(input.html)
+                  .then((res)=>{
+                    input.html = res;
+                  })
+        );
+    }
     // download and cache the footer html
     if(input.options['footer-html']){
       promises.push(
@@ -66,11 +96,26 @@ module.exports.htmlToPdf = function(event, context, callback) {
 
   Promise.all(promises).then(function(){
     renderPdf(input.html, input.options)
-    .then(function(result){
-      if(debug){
-        console.log('returning result with length', result.length);
+    .then(function(pdfFile){
+      var g = JSON.stringify(pdfFile).replace(/[\[\]\,\"]/g,''); //https://stackoverflow.com/a/19354869/4076776
+      console.log(`pdf: ${g.length} bytes`);      
+      if(zippedPdf) {
+        zip.compress(pdfFile, `${zippedPdfFilename}.pdf`, {
+           type:"binarystring"
+          , compression: "DEFLATE"
+          , compressionOptions : { level: 9 }         
+        })
+        .then((zipFile)=>{
+          var g = JSON.stringify(zipFile).replace(/[\[\]\,\"]/g,''); //https://stackoverflow.com/a/19354869/4076776
+          console.log(`output zip ${g.length} bytes`);      
+
+          callback(null, { data: zipFile });
+        });
+      } else {
+        callback(null, pdfFile);
       }
-      callback(null, result);
+
+
     })
     .catch(function(err){
       console.log("Error");

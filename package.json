@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Lambda service exposing wkhtmltopdf functionality for use with APIGold",
   "dependencies": {
+    "bluebird": "^3.5.0",
+    "jszip": "^3.1.3",
     "node-fetch": "^1.6.3",
     "read-all-stream": "^3.1.0",
-    "wkhtmltopdf": "^0.3.3"
+    "wkhtmltopdf": "^0.3.4"
   },
   "devDependencies": {},
   "scripts": {
